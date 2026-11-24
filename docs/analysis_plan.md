@@ -1,6 +1,9 @@
 # Analysis Plan — Nigeria Carbon Register
 
-**Version 1.0 · DRAFT — not reviewed** (Draft status lasts until Phase 5 review is complete.)
+**Version 1.1 · DRAFT — not reviewed** (Draft status lasts until Phase 5 review is complete.)
+
+*v1.1 includes Amendment A1 (2026-11-24): Berkeley v2026-08 becomes the main
+source for headline issued/retired totals. See `docs/amendments.md`.*
 
 This plan sets out what the project will analyse, how, and under which rules,
 before the main analysis starts. Once frozen (see `docs/plan_freeze.md`), any
@@ -61,10 +64,10 @@ record, compared with the registries or regulatory frameworks of Ghana and Kenya
 
 | Source | Use | Storage |
 |---|---|---|
-| CarbonPlan OffsetsDB, snapshot generated 2026-06-01 | Main data for projects, issuances and retirements (RQ1, RQ3, RQ4) | `data/raw/` (gitignored) |
+| Berkeley Carbon Trading Project — Voluntary Registry Offsets Database v2026-08 (CC BY 4.0, data through 2026-08-31) | Main source for headline credits issued and retired per project (RQ1, RQ3) *(A1)* | `data/raw/` (gitignored) |
+| CarbonPlan OffsetsDB, snapshot generated 2026-06-01 | Transaction-level issuance and retirement data, including retirement beneficiary fields (RQ4); first issuance dates; cross-check of Berkeley totals *(A1)* | `data/raw/` (gitignored) |
 | Gold Standard and Verra registry pages | Updates after June 2026; cross-check selected figures | Figures recorded with access date |
 | Gold Standard / Verra project documents (PDD, monitoring reports, verification reports), downloaded by hand, max ~20 | RQ2 disclosure scoring; RQ3 parameter values used in the credited calculations | `docs/sources/` (gitignored); a source list (file name, URL, access date) is tracked in the repo |
-| Berkeley Carbon Trading Project — Voluntary Registry Offsets Database | Independent cross-check of project counts and totals | `data/raw/` (gitignored) |
 | Nigerian policy documents (e.g. Climate Change Act 2021, National Carbon Market Activation Policy / framework, NCCC guidance) | RQ2 authorisation context; RQ5 | `docs/sources/` |
 | Ghana and Kenya registry / carbon market regulations | RQ5 comparison | `docs/sources/` |
 | Published literature and methodology documents (e.g. peer-reviewed studies on cookstove and water-treatment crediting, Gold Standard / CDM default values, ICVCM assessments) | RQ3 alternative parameter values | Cited in full; PDFs in `docs/sources/` |
@@ -81,16 +84,20 @@ Rules for data:
 ## 3. Methods
 
 ### RQ1 — Register
-1. Filter OffsetsDB projects to country = "Nigeria"; join issuance and retirement
-   totals from the `credits` table, and confirm they match the project-level totals
-   (they matched in Phase 0).
-2. Cross-check project counts and totals against the Berkeley database; list and
-   explain any difference instead of resolving it silently.
-3. Check registry pages for projects with activity after 2026-06-01 and record
-   updates separately with their access date.
-4. Add the Nigerian state(s) only where a project document states them, with page
+1. Take Nigerian projects (country = "Nigeria") from both Berkeley v2026-08 and
+   OffsetsDB, and match them by harmonised registry project ID.
+2. Headline credits issued and retired come from Berkeley (data through
+   2026-08-31) *(A1)*. For a project that appears only in OffsetsDB, the OffsetsDB
+   figure is used and labelled as such. Both sources' figures are kept side by side
+   in the register.
+3. Cross-check Berkeley totals against OffsetsDB (project-level and year-by-year);
+   list and explain any difference instead of resolving it silently.
+4. Check registry pages for projects with activity after 2026-08-31, and for
+   differences between the two databases, and record values separately with their
+   access date.
+5. Add the Nigerian state(s) only where a project document states them, with page
    citation. Otherwise record "not stated in reviewed documents".
-5. Output: `data/processed/nigeria_register.csv` plus a data dictionary.
+6. Output: `data/processed/nigeria_register.csv` plus a data dictionary.
 
 ### RQ2 — Transparency scorecard
 1. **Sample:** the top projects by credits issued, plus a sample of documents
@@ -134,8 +141,10 @@ Rules for data:
    the range.
 
 ### RQ4 — Buyers
-1. Use Nigerian retirement records where `retirement_beneficiary` (or
-   `retirement_beneficiary_harmonized`) is filled.
+1. Use Nigerian retirement records from the OffsetsDB `credits` table (snapshot
+   2026-06-01; Berkeley has no transaction-level beneficiary data) *(A1)* where
+   `retirement_beneficiary` (or `retirement_beneficiary_harmonized`) is filled.
+   Report the share of Berkeley's retired total covered by these records.
 2. Normalise organisation names by hand (log every mapping) and classify each
    beneficiary as organisation, individual or unclear.
 3. Report organisations by volume and year, with the share of retirements that
