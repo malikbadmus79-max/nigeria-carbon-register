@@ -38,5 +38,6 @@ Thumbs.db
 # Project-specific
 data/raw/*
 !data/raw/.gitkeep
-docs/sources/
+docs/sources/*
+!docs/sources/README.md
 *.pbix
